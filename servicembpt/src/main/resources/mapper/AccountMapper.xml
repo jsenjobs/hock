@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.AccountMapper">
+
+    <!-- 开启二级缓存 -->
+    <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.Account">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="sex" property="sex" />
+        <result column="password" property="password" />
+        <result column="lastlogin" property="lastlogin" />
+    </resultMap>
+
+    <!--  account, weibo  -->
+    <resultMap id="accountJoinWeibosMap" type="com.jsen.test.entity.union.AccountJoinWeibos">
+        <!-- <association column="a_id" property="account" javaType="com.jsen.test.entity.Account" resultMap="BaseResultMap" /> -->
+        <association property="account" column="a_id"
+                     select="com.jsen.test.mapper.AccountMapper.getAccountById"/>
+        <collection column="a_id" property="weiboList" javaType="java.util.ArrayList" ofType="com.jsen.test.entity.Weibo" select="com.jsen.test.mapper.WeiboMapper.findWeibosByAID" />
+    </resultMap>
+    <!--  account, weibo join  -->
+    <resultMap id="accountJoinWeibosUseJoinMap" type="com.jsen.test.entity.union.AccountJoinWeibos">
+        <association column="aid" property="account" javaType="com.jsen.test.entity.Account" resultMap="com.jsen.test.mapper.AccountMapper.BaseResultMap" />
+        <collection column="wid" property="weiboList" javaType="java.util.ArrayList" ofType="com.jsen.test.entity.Weibo" resultMap="com.jsen.test.mapper.WeiboMapper.BaseResultMap" />
+    </resultMap>
+
+
+
+    <!--  account, weibo, link  -->
+    <resultMap id="accountAllMap" type="com.jsen.test.entity.union.AccountAll">
+        <!-- <association column="a_id" property="account" javaType="com.jsen.test.entity.Account" resultMap="BaseResultMap" /> -->
+        <association property="account" column="a_id"
+                     select="com.jsen.test.mapper.AccountMapper.getAccountById"/>
+        <collection column="a_id" property="weiboAllList" javaType="java.util.ArrayList" ofType="com.jsen.test.entity.union.WeiboAll" select="com.jsen.test.mapper.WeiboMapper.findAllWeibosByAID" />
+    </resultMap>
+    <!--  account, weibo, link  join -->
+    <resultMap id="accountAllUseJoinMap" type="com.jsen.test.entity.union.AccountAll">
+        <association column="aid" property="account" javaType="com.jsen.test.entity.Account" resultMap="BaseResultMap" />
+        <collection column="wid" property="weiboAllList" javaType="java.util.ArrayList" ofType="com.jsen.test.entity.union.WeiboAll" resultMap="com.jsen.test.mapper.WeiboMapper.weiboWithLinkMap" />
+    </resultMap>
+
+    <resultMap id="flatMap" type="com.jsen.test.entity.union.AccountFlat">
+        <association property="account" column="aid" resultMap="com.jsen.test.mapper.AccountMapper.BaseResultMap" />
+        <association property="weibo" column="wid" resultMap="com.jsen.test.mapper.WeiboMapper.BaseResultMap" />
+        <association property="link" column="lid" resultMap="com.jsen.test.mapper.LinkMapper.BaseResultMap" />
+    </resultMap>
+
+
+
+    <select id="listAccountJoinWeibos" resultMap="accountJoinWeibosMap" >
+        SELECT a.id as a_id,a.name,a.sex,a.lastlogin FROM account a
+    </select>
+
+    <select id="listAccountJoinWeibosUseJoin" resultMap="accountJoinWeibosUseJoinMap" >
+        SELECT a.id as aid,a.name,a.sex,a.lastlogin,w.id as wid,w.create_time,w.content FROM account a LEFT JOIN weibo w ON a.id=w.a_id
+    </select>
+
+    <select id="lisAccountAll" resultMap="accountAllMap">
+        SELECT a.id as a_id,a.name,a.sex,a.lastlogin from account a
+    </select>
+
+    <select id="listAccountAllUseJoin" resultMap="accountAllUseJoinMap" >
+        SELECT a.id as aid,a.name,a.sex,a.lastlogin,w.id as wid,w.create_time,w.content,l.id as lid,l.w_id,l.link FROM account a LEFT JOIN weibo w ON a.id=w.a_id LEFT JOIN link l ON w.id=l.w_id
+    </select>
+
+    <select id="getAccountById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select * from account where id=#{0}
+    </select>
+
+    <select id="listFlat" resultMap="flatMap">
+        SELECT a.id as aid,a.name,a.sex,a.lastlogin,w.id as wid,w.create_time,w.content,l.id as lid,l.link FROM account a LEFT JOIN weibo w ON a.id=w.a_id LEFT JOIN link l on w.id=l.w_id
+    </select>
+
+    <select id="listInView" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT * FROM fullinfo <if test="name != null">
+        WHERE name=#{name}
+    </if>
+    </select>
+
+    <select id="listBetween" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM account WHERE id BETWEEN #{arg0} AND #{arg1}
+    </select>
+
+    <select id="listLimit" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM account LIMIT #{arg0},#{arg1}
+    </select>
+
+    <select id="listRandom" resultMap="BaseResultMap" >
+        SELECT * FROM account ORDER BY rand() LIMIT 4
+    </select>
+
+    <delete id="deleteDistinct">
+        DELETE FROM account WHERE account.id NOT IN (select mid from (SELECT MAX(id) as mid FROM account GROUP BY account.name) va)
+    </delete>
+
+
+    <update id="updateId">
+        UPDATE account SET id=#{arg1} WHERE id=#{arg0}
+    </update>
+
+
+
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM account
+    </select>
+
+    <select id="findByName" resultMap="BaseResultMap">
+        SELECT * FROM account WHERE name=#{arg0}
+    </select>
+
+    <delete id="deleteByID" >
+        DELETE FROM account WHERE account.id=#{arg0}
+    </delete>
+    <update id="updateNameById">
+        UPDATE account set name=#{arg1} WHERE id=#{arg0}
+    </update>
+
+    <select id="listAccountList" resultType="com.jsen.test.entity.Account">
+        SELECT * FROM account
+    </select>
+</mapper>

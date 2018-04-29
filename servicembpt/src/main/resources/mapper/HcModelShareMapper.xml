@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.HcModelShareMapper">
+
+    <!-- 开启二级缓存 -->
+    <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.HcModelShare">
+        <id column="id" property="id" />
+        <result column="model_data" property="modelData"/>
+        <result column="creator" property="creator" />
+        <result column="collect" property="collect" />
+        <result column="look" property="look" />
+        <result column="name" property="name" />
+        <result column="create_time" property="createTime" />
+        <result column="intro" property="intro" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <resultMap id="BaseResultMapWithCreator" type="com.jsen.test.entity.HcModelShare">
+        <id column="id" property="id" />
+        <result column="model_data" property="modelData"/>
+        <result column="creator" property="creator" />
+        <result column="collect" property="collect" />
+        <result column="look" property="look" />
+        <result column="name" property="name" />
+        <result column="create_time" property="createTime" />
+        <result column="intro" property="intro" />
+        <result column="type" property="type" />
+        <result column="creator_name" property="creatorName" />
+    </resultMap>
+
+    <insert id="insertOne" parameterType="com.jsen.test.entity.HcModelShare">
+        INSERT INTO hc_model_share(model_data, creator, collect, look, name, create_time, intro, type) VALUES (#{modelData},#{creator},#{collect},#{look}, #{name}, #{createTime}, #{intro}, #{type})
+    </insert>
+
+    <select id="listByCreator" resultMap="BaseResultMap">
+        SELECT * FROM hc_model_share WHERE creator=#{arg0}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM hc_model_share
+    </select>
+
+    <select id="listAllSimple" resultMap="BaseResultMapWithCreator">
+        SELECT h.id, collect, look, h.name,create_time, intro, type, sys_user.name AS creator_name FROM hc_model_share h JOIN sys_user ON creator=sys_user.id WHERE type=0 OR creator=#{arg0}
+    </select>
+
+    <select id="findByShareModelNameAndCreatorId" resultMap="BaseResultMap">
+        SELECT * FROM hc_model_share WHERE name=#{arg0} AND creator=#{arg1}
+    </select>
+    <update id="updateById" parameterType="com.jsen.test.entity.HcModelShare">
+        UPDATE hc_model_share SET  model_data=#{modelData} WHERE id=#{id}
+    </update>
+
+
+    <select id="countByName" parameterType="java.lang.String" resultType="java.lang.Integer" >
+        SELECT COUNT(id) FROM hc_model_share WHERE name=#{arg0} LIMIT 0,1
+    </select>
+
+    <select id="findShareModelById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM hc_model_share WHERE id=#{arg0}
+    </select>
+
+
+    <update id="updateShareModelNameByName" parameterType="java.lang.String">
+        UPDATE hc_model_share SET name=#{arg1} WHERE name=#{arg0}
+    </update>
+
+    <delete id="deleteShareModelById" parameterType="java.lang.Integer">
+        DELETE FROM hc_model_share WHERE id=#{arg0}
+    </delete>
+
+    <update id="updateShareModelCollectLookById" parameterType="java.lang.Integer">
+        UPDATE hc_model_share SET collect=#{arg1},look=#{arg2} WHERE id=#{arg0}
+    </update>
+</mapper>

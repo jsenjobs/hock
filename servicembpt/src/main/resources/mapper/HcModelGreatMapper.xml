@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.HcModelGreatMapper">
+
+    <!-- 开启二级缓存 -->
+    <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.HcModelGreat">
+        <result column="u_id" property="uId" />
+        <result column="m_id" property="mId" />
+    </resultMap>
+
+    <insert id="saveGreat" parameterType="com.jsen.test.entity.HcModelGreat">
+        INSERT INTO hc_model_great(u_id, m_id) VALUES (#{uId},#{mId})
+    </insert>
+    <select id="findGreat" parameterType="com.jsen.test.entity.HcModelGreat" resultMap="BaseResultMap">
+        SELECT * FROM hc_model_great WHERE u_id=#{uId} AND m_id=#{mId}
+    </select>
+    <select id="findGreatByUid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM hc_model_great WHERE u_id=#{arg0}
+    </select>
+    <delete id="deleteGreat" parameterType="com.jsen.test.entity.HcModelGreat">
+        DELETE FROM hc_model_great WHERE u_id=#{uId} AND m_id=#{mId}
+    </delete>
+
+    <delete id="deleteGreatByMId" parameterType="java.lang.Integer">
+        DELETE FROM hc_model_great WHERE m_id=#{mId}
+    </delete>
+</mapper>

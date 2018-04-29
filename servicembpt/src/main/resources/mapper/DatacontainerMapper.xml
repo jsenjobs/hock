@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.DatacontainerMapper">
+
+    <!-- 开启二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.Datacontainer">
+        <id column="id" property="id" />
+        <result column="data" property="data" />
+        <result column="tip" property="tip" />
+    </resultMap>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO datacontainer(data, tip) VALUES
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator="),(">
+            #{item.data},#{item.tip}
+        </foreach>
+    </insert>
+
+    <insert id="insertOne" parameterType="java.lang.String">
+        INSERT INTO datacontainer(data, tip) VALUE(#{arg0},#{arg1})
+    </insert>
+
+
+
+    <update id="updateDataById">
+        UPDATE datacontainer SET `data` =#{arg1} where id=#{arg0}
+    </update>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT * FROM datacontainer
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM datacontainer WHERE id=#{arg0}
+    </delete>
+
+</mapper>

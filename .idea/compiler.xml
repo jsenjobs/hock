@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="common" />
+        <module name="serviceconfig" />
+        <module name="serviceeureka" />
+        <module name="servicembpt" />
+        <module name="servicequartz" />
+        <module name="servicezuul" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="common" target="1.8" />
+      <module name="hock" target="1.8" />
+      <module name="serviceconfig" target="1.8" />
+      <module name="serviceeureka" target="1.8" />
+      <module name="servicembpt" target="1.8" />
+      <module name="servicequartz" target="1.8" />
+      <module name="servicezuul" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

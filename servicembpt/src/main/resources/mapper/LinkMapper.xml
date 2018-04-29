@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.LinkMapper">
+
+    <!-- 开启二级缓存 -->
+    <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.Link">
+        <id column="id" property="id" />
+        <result column="w_id" property="wId" />
+        <result column="link" property="link" />
+    </resultMap>
+
+    <resultMap id="linkJoinAllMap" type="com.jsen.test.entity.union.LinkJoinAll">
+        <association property="link" column="id" javaType="com.jsen.test.entity.Link" resultMap="com.jsen.test.mapper.LinkMapper.BaseResultMap" />
+        <association property="weibo" column="w_id" javaType="com.jsen.test.entity.Weibo" resultMap="com.jsen.test.mapper.WeiboMapper.BaseResultMap" />
+        <association property="account" column="a_id" resultMap="com.jsen.test.mapper.AccountMapper.BaseResultMap" />
+    </resultMap>
+
+
+    <select id="listLinkJoinAll" resultMap="linkJoinAllMap">
+        SELECT * FROM link l LEFT JOIN weibo w ON w.id=l.w_id LEFT JOIN account a on a.id=w.a_id
+    </select>
+
+    <select id="findLinksByWID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM link WHERE w_id=#{0}
+    </select>
+
+</mapper>

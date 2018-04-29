@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.HcModelMapper">
+
+    <!-- 开启二级缓存 -->
+    <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.HcModel">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="intro" property="intro" />
+        <result column="model_data" property="modelData"/>
+        <result column="creator" property="creator" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <insert id="saveModel" parameterType="com.jsen.test.entity.HcModel">
+        INSERT INTO hc_model(name,intro, model_data,creator) VALUES (#{name},#{intro},#{modelData},#{creator})
+    </insert>
+
+    <update id="updateModel" parameterType="com.jsen.test.entity.HcModel">
+        UPDATE hc_model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name=#{name},</if>
+            <if test="modelData != null">model_data=#{modelData},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="clearAllDataByUserId" parameterType="java.lang.Integer">
+        DELETE FROM hc_model WHERE creator=#{arg0}
+    </delete>
+
+    <select id="findModelByUserId" resultMap="BaseResultMap">
+        SELECT * FROM hc_model WHERE creator=#{arg0}
+    </select>
+
+    <select id="findModelByModelIdAndCreatorId" resultMap="BaseResultMap">
+        SELECT * FROM hc_model WHERE id=#{arg0} AND creator=#{arg1}
+    </select>
+
+    <select id="findModelByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM hc_model WHERE name=#{arg0}
+    </select>
+
+    <select id="countByName" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM hc_model WHERE name=#{arg0}
+    </select>
+
+    <select id="findModelDataById" resultMap="BaseResultMap">
+        SELECT model_data FROM hc_model WHERE id=#{arg0}
+    </select>
+
+    <update id="updateModelNameByName" parameterType="java.lang.String">
+        UPDATE hc_model SET name=#{arg1} WHERE name=#{arg0}
+    </update>
+</mapper>

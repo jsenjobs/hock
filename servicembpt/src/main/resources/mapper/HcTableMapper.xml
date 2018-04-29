@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.HcTableMapper">
+    <!-- 开启二级缓存 -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.HcTable">
+        <id column="id" property="id" />
+        <result column="table_name" property="tableName" />
+        <result column="meta_name" property="metaName" />
+        <result column="comment" property="comment" />
+        <result column="tag" property="tag" />
+    </resultMap>
+
+    <select id="getTableByTopicIdAndUserId" resultMap="BaseResultMap">
+        SELECT * FROM hc_table WHERE (hc_table.id IN (SELECT table_id FROM hc_role_table WHERE role_id IN (SELECT role_id FROM sys_user_role WHERE user_id=#{arg1}))) AND (hc_table.id IN (SELECT table_id FROM hc_theme_table WHERE theme_id=#{arg0}));
+
+        <!-- SELECT * FROM hc_table WHERE id IN (SELECT table_id FROM hc_theme_table WHERE theme_id=#{arg0}) -->
+    </select>
+
+    <select id="listTables" resultMap="BaseResultMap">
+        SELECT * FROM hc_table
+    </select>
+
+    <select id="getTableById"  resultMap="BaseResultMap">
+        SELECT * FROM hc_table WHERE id=#{arg0}
+    </select>
+
+    <update id="updateTable" parameterType="com.jsen.test.entity.HcTable">
+        UPDATE hc_table
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="metaName != null">meta_name=#{metaName},</if>
+            <if test="comment != null">comment=#{comment},</if>
+            <if test="tag != null">tag=#{tag},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM hc_table WHERE id=#{arg0}
+    </delete>
+
+    <delete id="deleteTableRoleByTableId" parameterType="java.lang.Integer">
+        DELETE FROM hc_role_table WHERE table_id=#{arg0}
+    </delete>
+
+    <delete id="deleteTableRoleByRoleId" parameterType="java.lang.Integer">
+        DELETE FROM hc_role_table WHERE role_id=#{arg0}
+    </delete>
+
+    <delete id="deleteTableTopicByTableId" parameterType="java.lang.Integer">
+        DELETE FROM hc_theme_table WHERE table_id=#{arg0}
+    </delete>
+
+    <insert id="insertHcTable" parameterType="com.jsen.test.entity.HcTable" >
+        INSERT INTO hc_table(table_name, meta_name, comment, tag) VALUES (#{tableName}, #{metaName}, #{comment}, #{tag})
+    </insert>
+
+    <insert id="insertRoleTable" parameterType="java.lang.Integer" >
+        INSERT INTO hc_role_table(role_id, table_id) VALUES (#{arg1}, #{arg0})
+    </insert>
+
+    <insert id="insertTopicTables" parameterType="java.lang.Object" >
+        INSERT INTO hc_theme_table(theme_id, table_id) VALUES
+        <foreach collection="tableIds" item="item" index="index" open="(" close=")" separator="),(">
+            #{topicId},#{item}
+        </foreach>
+    </insert>
+
+    <select id="findExistRoleTable" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+      SELECT COUNT(id) FROM hc_role_table WHERE table_id=#{arg0} AND role_id=#{arg1} LIMIT 0,1
+    </select>
+
+    <select id="findExistTopicTable" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+        SELECT COUNT(id) FROM hc_theme_table WHERE table_id=#{arg0} AND theme_id=#{arg1} LIMIT 0,1
+    </select>
+
+    <select id="listHcTableByRId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT ht.* FROM hc_role_table hrt LEFT JOIN hc_table ht ON ht.id = hrt.table_id WHERE hrt.role_id=#{arg0}
+    </select>
+
+    <delete id="deleteRoleTableByRoleIdAndTableId" parameterType="java.lang.Integer">
+        DELETE FROM hc_role_table WHERE role_id=#{arg0} AND table_id=#{arg1}
+    </delete>
+</mapper>

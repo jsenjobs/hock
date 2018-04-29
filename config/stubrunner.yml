@@ -1,0 +1,6 @@
+
+# spring cloud stubrunner
+stubrunner:
+  stubsMode: LOCAL
+  ids:
+    - com.jsen.test:service-quartz:+:8081

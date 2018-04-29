@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.DBMetaMapper">
+    <!-- 开启二级缓存 -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ColumnBaseResultMap" type="com.jsen.test.entity.DBMetaColumn">
+        <id column="FIELD" property="field" />
+        <result column="TYPE" property="type" />
+        <result column="NULL" property="_null" />
+        <result column="KEY" property="key" />
+        <result column="DEFAULT" property="_default" />
+        <result column="EXTRA" property="extra" />
+    </resultMap>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="TableBaseResultMap" type="com.jsen.test.entity.DBMetaTable">
+        <id column="FIELD" property="field" />
+        <result column="TYPE" property="type" />
+        <result column="NULL" property="_null" />
+        <result column="KEY" property="key" />
+        <result column="DEFAULT" property="_default" />
+        <result column="EXTRA" property="extra" />
+    </resultMap>
+
+    <select id="listColumnForTable" resultMap="ColumnBaseResultMap">
+        SHOW COLUMNS FROM ${tableName}
+    </select>
+
+    <!--SHOW TABLES FROM ${dbName} -->
+    <select id="listTablesForDB" resultType="java.util.Map">
+        SELECT TABLE_NAME FROM information_schema.TABLES WHERE table_type = 'BASE TABLE' AND table_schema = #{dbName}
+    </select>
+
+</mapper>

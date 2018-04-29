@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.SysUserMapper">
+
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jsen.test.entity.SysUser">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="sex" property="sex" />
+    </resultMap>
+
+    <!--  account, weibo join  -->
+    <resultMap id="userWithRoleList" type="com.jsen.test.entity.SysUser">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="sex" property="sex" />
+        <collection column="id" property="sysRoleList" javaType="java.util.ArrayList" ofType="com.jsen.test.entity.SysRole" select="com.jsen.test.mapper.SysUserRoleMapper.listRolesByUId" />
+    </resultMap>
+
+    <select id="getRoleByUserId" resultType="com.jsen.test.entity.SysRole">
+        SELECT * FROM sys_role sr WHERE sr.id IN ( SELECT sur.role_id FROM sys_user_role sur WHERE sur.user_id=#{arg0})
+    </select>
+
+    <select id="getPermissionByRoleId" resultType="com.jsen.test.entity.SysPermission">
+        SELECT * FROM sys_permission sp WHERE sp.id IN (SELECT srp.permission_id FROM sys_role_permission srp WHERE srp.role_id=#{arg0})
+    </select>
+
+    <insert id="insertUser" parameterType="com.jsen.test.entity.SysUser">
+        INSERT INTO sys_user(name, password) VALUES(#{name}, #{password})
+    </insert>
+
+    <delete id="deleteUser" parameterType="java.lang.String">
+        DELETE FROM sys_user WHERE name=#{arg0}
+    </delete>
+
+    <select id="listPage" resultMap="userWithRoleList">
+        SELECT * FROM sys_user
+    </select>
+
+    <select id="getUserByName" parameterType="java.lang.String" resultType="com.jsen.test.entity.SysUser">
+        SELECT * FROM sys_user WHERE name=#{arg0} LIMIT 1
+    </select>
+
+    <select id="getUserById" parameterType="java.lang.Integer" resultType="com.jsen.test.entity.SysUser">
+        SELECT * FROM sys_user WHERE id=#{arg0}
+    </select>
+
+    <select id="countUser" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM sys_user
+    </select>
+
+</mapper>

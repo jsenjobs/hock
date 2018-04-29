@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsen.test.mapper.DynamicPreCoreMapper">
+    <!-- 开启二级缓存 -->
+    <!--
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+
+
+    <select id="list" resultType="java.util.Map">
+        ${sqlStr}
+    </select>
+
+    <select id="execSqlReturnView" resultType="java.lang.String">
+        ${sqlStr}
+    </select>
+
+    <select id="testView" resultType="java.lang.String">
+        CREATE VIEW test_view001 AS SELECT * FROM hc_model
+    </select>
+
+    <select id="testDeleteView" resultType="java.lang.String">
+        DROP VIEW IF EXISTS test_view001
+    </select>
+</mapper>
